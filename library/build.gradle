@@ -4,10 +4,10 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.KizitoNwose'
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.1'
+    buildToolsVersion '24.0.2'
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 24
+        targetSdkVersion 23
     }
     lintOptions {
         abortOnError false

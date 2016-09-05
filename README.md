@@ -2,11 +2,10 @@
 
 [![Release](https://jitpack.io/v/KizitoNwose/AndroidTagGroup.svg)](https://jitpack.io/#KizitoNwose/AndroidTagGroup)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidTagGroup-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1539)
-[![Build Status](https://travis-ci.org/2dxgujun/AndroidTagGroup.png?branch=master)](https://travis-ci.org/2dxgujun/AndroidTagGroup)
 
 The TagGroup is a special layout with a set of tags. You can use it to tag people, books or anything you want.
 
-Also you can contribute new idea to me.
+This repo contains some new features and bug fixes(Especially the issue where the "Enter key" on Google keyboard does not submit new tags)
 
 # Demo
 
@@ -38,7 +37,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	compile 'com.github.KizitoNwose:AndroidTagGroup:-SNAPSHOT'
+	compile 'com.github.KizitoNwose:AndroidTagGroup:1.6.0'
 }
 ```
 
@@ -54,7 +53,7 @@ dependencies {
 <dependency>
 	    <groupId>com.github.KizitoNwose</groupId>
 	    <artifactId>AndroidTagGroup</artifactId>
-	    <version>-SNAPSHOT</version>
+	    <version>1.6.0</version>
 </dependency>
 ```
 

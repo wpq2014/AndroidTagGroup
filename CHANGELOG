@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 1.6 *(2016-08-27)*
+Version 1.6.0 *(2016-08-27)*
 ----------------------------
 
 -Fixed issue where tag is not submitted with enter key on some keyboards.
