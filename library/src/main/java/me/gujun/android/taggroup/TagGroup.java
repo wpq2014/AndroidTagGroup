@@ -887,27 +887,10 @@ public class TagGroup extends ViewGroup {
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
                         //workaround for keyboards that don't work well with the enter key event
                         if (s.toString().contains("\n")) {
-
-
                             setText(s.toString().replace("\n", ""));
-
-                            if (isInputAvailable()) {
-                                // If the input content is available, end the input and dispatch
-                                // the event, then append a new INPUT state tag.
-                                if (mOnTagChangeListener != null) {
-                                    if (mOnTagChangeListener.onAppend(TagGroup.this, getText().toString())) {
-                                        endInput();
-                                        appendInputTag();
-                                    }
-                                } else {
-                                    endInput();
-                                    appendInputTag();
-                                }
-                            }
-
+                            submitTag();
                         }
                     }
                 });
