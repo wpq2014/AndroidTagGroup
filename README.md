@@ -5,7 +5,6 @@
 
 The TagGroup is a special layout with a set of tags. You can use it to tag people, books or anything you want.
 
-This repo contains some new features and bug fixes(Especially the issue where the "Enter key" on Google keyboard does not submit new tags)
 
 # Demo
 
@@ -37,7 +36,7 @@ allprojects {
 
 ```gradle
 dependencies {
-	compile 'com.github.KizitoNwose:AndroidTagGroup:1.6.0'
+	compile 'com.github.kizitonwose:AndroidTagGroup:1.6.0'
 }
 ```
 
@@ -51,7 +50,7 @@ dependencies {
 </repository>
 
 <dependency>
-	    <groupId>com.github.KizitoNwose</groupId>
+	    <groupId>com.github.kizitonwose</groupId>
 	    <artifactId>AndroidTagGroup</artifactId>
 	    <version>1.6.0</version>
 </dependency>
