@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import me.gujun.android.taggroup.TagGroup;
@@ -15,6 +16,7 @@ public class TagEditorActivity extends ActionBarActivity {
 
     private static final String TAG = TagEditorActivity.class.getSimpleName();
 
+    private ScrollView mScrollView;
     private TagGroup mTagGroup;
     private TagGroup mTagGroupChoice;
 
@@ -24,6 +26,9 @@ public class TagEditorActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tag_editor);
+
+        mScrollView = (ScrollView) findViewById(R.id.scrollView);
+
 
         mTagsManager = TagsManager.getInstance(getApplicationContext());
         String[] tags = mTagsManager.getTags();

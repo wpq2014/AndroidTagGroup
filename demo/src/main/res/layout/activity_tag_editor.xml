@@ -11,10 +11,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TagEditorActivity">
 
-    <me.gujun.android.taggroup.TagGroup
-        android:id="@+id/tag_group"
-        style="@style/TagGroup"
-        app:atg_isAppendMode="true"/>
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        >
+
+        <me.gujun.android.taggroup.TagGroup
+            android:id="@+id/tag_group"
+            style="@style/TagGroup"
+            app:atg_isAppendMode="true"/>
+
+    </ScrollView>
 
     <me.gujun.android.taggroup.TagGroup
         android:id="@+id/tag_group_choice"

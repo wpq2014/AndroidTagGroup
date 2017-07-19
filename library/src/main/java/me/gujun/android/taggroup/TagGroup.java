@@ -460,8 +460,7 @@ public class TagGroup extends ViewGroup {
      */
     protected TagView getLastNormalTagView() {
         final int lastNormalTagIndex = isAppendMode ? getChildCount() - 2 : getChildCount() - 1;
-        TagView lastNormalTagView = getTagAt(lastNormalTagIndex);
-        return lastNormalTagView;
+        return getTagAt(lastNormalTagIndex);
     }
 
     /**
@@ -1141,6 +1140,7 @@ public class TagGroup extends ViewGroup {
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: {
+//                    Log.e(TAG, "TagView MotionEvent.ACTION_DOWN");
                     getDrawingRect(mOutRect);
                     isPressed = true;
                     invalidatePaint();
@@ -1148,7 +1148,9 @@ public class TagGroup extends ViewGroup {
                     break;
                 }
                 case MotionEvent.ACTION_MOVE: {
+//                    Log.e(TAG, "TagView MotionEvent.ACTION_MOVE");
                     if (!mOutRect.contains((int) event.getX(), (int) event.getY())) {
+//                        Log.e(TAG, "MotionEvent.ACTION_MOVE if");
                         isPressed = false;
                         invalidatePaint();
                         invalidate();
@@ -1156,6 +1158,18 @@ public class TagGroup extends ViewGroup {
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
+//                    Log.e(TAG, "TagView MotionEvent.ACTION_UP");
+                    isPressed = false;
+                    invalidatePaint();
+                    invalidate();
+                    break;
+                }
+                case MotionEvent.ACTION_CANCEL: {
+//                    Log.e(TAG, "TagView MotionEvent.ACTION_CANCEL");
+                    // TagGroup外层嵌套ScrollView滚动时会拦截ACTION_UP事件，
+                    // 此时如果手指正按下tag，滚动时由于不触发UP事件，手指离开时还是按下状态
+                    // 这时候就需要处理ACTION_CANCEL事件了，事件被父控件拦截时会触发子控件的ACTION_CANCEL
+                    // refs：http://www.jianshu.com/p/8360d7150786
                     isPressed = false;
                     invalidatePaint();
                     invalidate();
