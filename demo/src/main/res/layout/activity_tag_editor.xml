@@ -11,18 +11,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TagEditorActivity">
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <me.gujun.android.taggroup.demo.MaxHeightView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        >
+        android:layout_height="wrap_content"
+        app:mhv_HeightRatio="0.2">
 
-        <me.gujun.android.taggroup.TagGroup
-            android:id="@+id/tag_group"
-            style="@style/TagGroup"
-            app:atg_isAppendMode="true"/>
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbarStyle="outsideInset"
+            >
 
-    </ScrollView>
+            <me.gujun.android.taggroup.TagGroup
+                android:id="@+id/tag_group"
+                style="@style/TagGroup"
+                app:atg_isAppendMode="true"/>
+
+        </ScrollView>
+
+    </me.gujun.android.taggroup.demo.MaxHeightView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="15dp"
+        />
 
     <me.gujun.android.taggroup.TagGroup
         android:id="@+id/tag_group_choice"

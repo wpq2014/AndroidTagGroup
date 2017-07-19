@@ -2,7 +2,6 @@ package me.gujun.android.taggroup.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ScrollView;
@@ -51,7 +50,7 @@ public class TagEditorActivity extends ActionBarActivity {
     private TagGroup.OnTagChangeListener mOnTagChangeListener = new TagGroup.OnTagChangeListener() {
         @Override
         public void onInputTextChanged(CharSequence s) {
-            Log.e(TAG, "当前输入内容：" + s.toString() + " -> 开始检索相关诊断");
+//            Log.e(TAG, "当前输入内容：" + s.toString() + " -> 开始检索相关诊断");
         }
 
         @Override
