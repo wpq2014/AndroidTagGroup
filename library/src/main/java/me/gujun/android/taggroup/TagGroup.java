@@ -14,6 +14,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
@@ -67,11 +68,17 @@ public class TagGroup extends ViewGroup {
     private static final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
     private static final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
     private static final int default_input_max_length = 40;
+    private static final int default_tags_count_limit = 10;
 
     /**
      * Whether the TagGroup allow repeat tags. Default is false.
      */
     private boolean allowRepeat;
+
+    /**
+     * Set tags count limit.
+     */
+    private int tagsCountLimit;
 
     /**
      * Indicates whether this TagGroup is set up to APPEND mode or DISPLAY mode. Default is false.
@@ -84,7 +91,7 @@ public class TagGroup extends ViewGroup {
     private CharSequence inputHint;
 
     /**
-     * Set input max length
+     * Set input max length.
      */
     private int inputMaxLenght;
 
@@ -209,6 +216,7 @@ public class TagGroup extends ViewGroup {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagGroup, defStyleAttr, R.style.TagGroup);
         try {
             allowRepeat = a.getBoolean(R.styleable.TagGroup_atg_allowRepeat, false);
+            tagsCountLimit = a.getInt(R.styleable.TagGroup_atg_tagsCountLimit, default_tags_count_limit);
             isAppendMode = a.getBoolean(R.styleable.TagGroup_atg_isAppendMode, false);
             inputHint = a.getText(R.styleable.TagGroup_atg_inputHint);
             inputMaxLenght = a.getInt(R.styleable.TagGroup_atg_inputMaxLength, default_input_max_length);
@@ -247,30 +255,48 @@ public class TagGroup extends ViewGroup {
         }
     }
 
+    private void submitTag() {
+        submitTag(null);
+    }
+
     /**
      * Call this to submit the INPUT tag.
+     * 这里有三种情况可以触发submit：
+     * 1. 点击当前 TagGroup 的空白区域；
+     * 2. 点击输入法的 ENTER 键；
+     * 3. 外部强行插入，类似微信添加标签
+     * @param inputText 外部强行插入的标签
      */
-    public void submitTag() {
+    public void submitTag(String inputText) {
+        if (getTags().length >= tagsCountLimit) {
+//            Log.e(TAG, "the tags count reach limit " + tagsCountLimit);
+            if (mOnTagChangeListener != null) {
+                mOnTagChangeListener.onTagsCountReachLimit(this, tagsCountLimit);
+            }
+            return;
+        }
+
         final TagView inputTag = getInputTag();
+        if (!TextUtils.isEmpty(inputText)) {
+            inputTag.setText(inputText);
+        }
         if (inputTag != null && inputTag.isInputAvailable()) {
             String tag = inputTag.getText().toString();
-            // submit时如果 输入框有内容 && 光标在最左边 && 前一个tag是被checked状态
-            // 此时需要先把前一个tag设为setChecked(false)
-            TagView lastTagView = getLastNormalTagView();
-            if (lastTagView != null) {
-                lastTagView.setChecked(false);
-            }
 
-            if (mOnTagChangeListener == null || mOnTagChangeListener.onAppend(TagGroup.this, tag)) {
-                if (!allowRepeat) {
-                    TagView tagView = containsTag(tag);
-                    if (tagView != null) {
-                        deleteTag(tagView);
-                    }
+            // submit时将当前选中状态的tag重置
+            resetTagState();
+
+            if (!allowRepeat) {
+                TagView tagView = containsTag(tag);
+                if (tagView != null) {
+                    deleteTag(tagView);
                 }
-                inputTag.endInput();
-                appendInputTag();
             }
+            inputTag.endInput();
+            if (mOnTagChangeListener != null) {
+                mOnTagChangeListener.onAppend(this, tag);
+            }
+            appendInputTag();
 
         }
     }
@@ -539,6 +565,19 @@ public class TagGroup extends ViewGroup {
     }
 
     /**
+     * Called when
+     * {@link TextWatcher#beforeTextChanged(CharSequence, int, int, int)}
+     * and
+     * {@link #submitTag()}
+     */
+    private void resetTagState() {
+        final TagView checkedTagView = getCheckedTag();
+        if (checkedTagView != null) {
+            checkedTagView.setChecked(false);
+        }
+    }
+
+    /**
      * Register a callback to be invoked when this tag group is changed.
      *
      * @param l the callback that will run
@@ -614,18 +653,21 @@ public class TagGroup extends ViewGroup {
         }
     }
 
-    //CHANGE
-
     /**
      * Interface definition for a callback to be invoked when a tag group is changed.
      */
     public interface OnTagChangeListener {
         /**
+         * Called when input text changed
+         * @param s the input text
+         */
+        void onInputTextChanged(CharSequence s);
+        /**
          * Called when a tag has been appended to the group.
          *
          * @param tag the appended tag.
          */
-        boolean onAppend(TagGroup tagGroup, String tag);
+        void onAppend(TagGroup tagGroup, String tag);
 
         /**
          * Called when a tag has been deleted from the the group.
@@ -633,6 +675,13 @@ public class TagGroup extends ViewGroup {
          * @param tag the deleted tag.
          */
         void onDelete(TagGroup tagGroup, String tag);
+
+        /**
+         * Called when tags count reach the limit
+         * @param tagGroup this
+         * @param tagsCountLimit limit for tags count
+         */
+        void onTagsCountReachLimit(TagGroup tagGroup, int tagsCountLimit);
     }
 
     /**
@@ -864,7 +913,6 @@ public class TagGroup extends ViewGroup {
                         if (actionId == EditorInfo.IME_NULL
                                 && (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                                 && event.getAction() == KeyEvent.ACTION_DOWN)) {
-
                             submitTag();
                             return true;
                         }
@@ -909,14 +957,14 @@ public class TagGroup extends ViewGroup {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                         // When the INPUT state tag changed, uncheck the checked tag if exists.
-                        final TagView checkedTagView = getCheckedTag();
-                        if (checkedTagView != null) {
-                            checkedTagView.setChecked(false);
-                        }
+                        resetTagState();
                     }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        if (mOnTagChangeListener != null) {
+                            mOnTagChangeListener.onInputTextChanged(s);
+                        }
                     }
 
                     @Override

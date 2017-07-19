@@ -3,6 +3,9 @@
         <!-- Whether the TagGroup allow repeat tags -->
         <attr name="atg_allowRepeat" format="boolean"/>
 
+        <!-- Set tags count limit -->
+        <attr name="atg_tagsCountLimit" format="integer" />
+
         <!-- Whether the tag group is in append mode. -->
         <attr name="atg_isAppendMode" format="boolean" />
         <!-- If the tag group is in append mode, what the hint of input tag. -->
