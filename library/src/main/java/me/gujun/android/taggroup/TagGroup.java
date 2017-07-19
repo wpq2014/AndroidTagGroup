@@ -13,10 +13,10 @@ import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -29,6 +29,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,24 +51,25 @@ import java.util.List;
  * @since 2015-2-3 14:16:32
  */
 public class TagGroup extends ViewGroup {
-    private final int default_border_color = Color.rgb(0x49, 0xC1, 0x20);
-    private final int default_text_color = Color.rgb(0x49, 0xC1, 0x20);
-    private final int default_background_color = Color.WHITE;
-    private final int default_dash_border_color = Color.rgb(0xAA, 0xAA, 0xAA);
-    private final int default_input_hint_color = Color.argb(0x80, 0x00, 0x00, 0x00);
-    private final int default_input_text_color = Color.argb(0xDE, 0x00, 0x00, 0x00);
-    private final int default_checked_border_color = Color.rgb(0x49, 0xC1, 0x20);
-    private final int default_checked_text_color = Color.WHITE;
-    private final int default_checked_marker_color = Color.WHITE;
-    private final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
-    private final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
-    private final float default_border_stroke_width;
-    private final float default_text_size;
-    private final float default_horizontal_spacing;
-    private final float default_vertical_spacing;
-    private final float default_horizontal_padding;
-    private final float default_vertical_padding;
 
+    private static final String TAG = TagGroup.class.getSimpleName();
+
+    private static final int default_border_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_text_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_background_color = Color.WHITE;
+    private static final int default_dash_border_color = Color.rgb(0xAA, 0xAA, 0xAA);
+    private static final int default_input_hint_color = Color.argb(0x80, 0x00, 0x00, 0x00);
+    private static final int default_input_text_color = Color.argb(0xDE, 0x00, 0x00, 0x00);
+    private static final int default_checked_border_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_checked_text_color = Color.WHITE;
+    private static final int default_checked_marker_color = Color.WHITE;
+    private static final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
+
+    /**
+     * Whether the TagGroup allow repeat tags. Default is false.
+     */
+    private boolean allowRepeat;
     /**
      * Indicates whether this TagGroup is set up to APPEND mode or DISPLAY mode. Default is false.
      */
@@ -188,16 +190,17 @@ public class TagGroup extends ViewGroup {
 
     public TagGroup(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        default_border_stroke_width = dp2px(0.5f);
-        default_text_size = sp2px(13.0f);
-        default_horizontal_spacing = dp2px(8.0f);
-        default_vertical_spacing = dp2px(4.0f);
-        default_horizontal_padding = dp2px(12.0f);
-        default_vertical_padding = dp2px(3.0f);
+        float default_border_stroke_width = dp2px(0.5f);
+        float default_text_size = sp2px(13.0f);
+        float default_horizontal_spacing = dp2px(8.0f);
+        float default_vertical_spacing = dp2px(4.0f);
+        float default_horizontal_padding = dp2px(12.0f);
+        float default_vertical_padding = dp2px(3.0f);
 
         // Load styled attributes.
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagGroup, defStyleAttr, R.style.TagGroup);
         try {
+            allowRepeat = a.getBoolean(R.styleable.TagGroup_atg_allowRepeat, false);
             isAppendMode = a.getBoolean(R.styleable.TagGroup_atg_isAppendMode, false);
             inputHint = a.getText(R.styleable.TagGroup_atg_inputHint);
             borderColor = a.getColor(R.styleable.TagGroup_atg_borderColor, default_border_color);
@@ -241,12 +244,21 @@ public class TagGroup extends ViewGroup {
     public void submitTag() {
         final TagView inputTag = getInputTag();
         if (inputTag != null && inputTag.isInputAvailable()) {
-            if (mOnTagChangeListener != null) {
-                if (mOnTagChangeListener.onAppend(TagGroup.this, inputTag.getText().toString())) {
-                    inputTag.endInput();
-                    appendInputTag();
+            String tag = inputTag.getText().toString();
+            // submit时如果 输入框有内容 && 光标在最左边 && 前一个tag是被checked状态
+            // 此时需要先把前一个tag设为setChecked(false)
+            TagView lastTagView = getLastNormalTagView();
+            if (lastTagView != null) {
+                lastTagView.setChecked(false);
+            }
+
+            if (mOnTagChangeListener == null || mOnTagChangeListener.onAppend(TagGroup.this, tag)) {
+                if (!allowRepeat) {
+                    TagView tagView = containsTag(tag);
+                    if (tagView != null) {
+                        deleteTag(tagView);
+                    }
                 }
-            } else {
                 inputTag.endInput();
                 appendInputTag();
             }
@@ -347,6 +359,7 @@ public class TagGroup extends ViewGroup {
         ss.tags = getTags();
         ss.checkedPosition = getCheckedTagIndex();
         if (getInputTag() != null) {
+            Log.e(TAG + " onSaveInstanceState", "*" + getInputTag().getText().toString() + "*");
             ss.input = getInputTag().getText().toString();
         }
         return ss;
@@ -368,6 +381,7 @@ public class TagGroup extends ViewGroup {
             checkedTagView.setChecked(true);
         }
         if (getInputTag() != null) {
+            Log.e(TAG + " onRestoreInstanceState", "*" + ss.input + "*");
             getInputTag().setText(ss.input);
         }
     }
@@ -426,7 +440,7 @@ public class TagGroup extends ViewGroup {
         for (int i = 0; i < count; i++) {
             final TagView tagView = getTagAt(i);
             if (tagView.mState == TagView.STATE_NORMAL) {
-                tagList.add(tagView.getText().toString());
+                tagList.add(tagView.getText().toString().trim());
             }
         }
 
@@ -454,6 +468,25 @@ public class TagGroup extends ViewGroup {
         if (isAppendMode) {
             appendInputTag();
         }
+    }
+
+    /**
+     * filter repeat tag
+     * @param tag
+     * @return
+     */
+    protected TagView containsTag(String tag) {
+        final int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            final TagView tagView = getTagAt(i);
+            if (tagView.mState == TagView.STATE_NORMAL) {
+                String indexTag = tagView.getText().toString().trim();
+                if (indexTag.equals(tag)) {
+                    return tagView;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -566,7 +599,7 @@ public class TagGroup extends ViewGroup {
     protected void deleteTag(TagView tagView) {
         removeView(tagView);
         if (mOnTagChangeListener != null) {
-            mOnTagChangeListener.onDelete(TagGroup.this, tagView.getText().toString());
+            mOnTagChangeListener.onDelete(TagGroup.this, tagView.getText().toString().trim());
         }
     }
 
@@ -689,7 +722,7 @@ public class TagGroup extends ViewGroup {
                 }
             } else {
                 if (mOnTagClickListener != null) {
-                    mOnTagClickListener.onTagClick(tag.getText().toString());
+                    mOnTagClickListener.onTagClick(tag.getText().toString().trim());
                 }
             }
         }
@@ -820,21 +853,8 @@ public class TagGroup extends ViewGroup {
                         if (actionId == EditorInfo.IME_NULL
                                 && (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                                 && event.getAction() == KeyEvent.ACTION_DOWN)) {
-                            if (isInputAvailable()) {
-                                // If the input content is available, end the input and dispatch
-                                // the event, then append a new INPUT state tag.
 
-                                if (mOnTagChangeListener != null) {
-                                    if (mOnTagChangeListener.onAppend(TagGroup.this, getText().toString())) {
-                                        endInput();
-                                        appendInputTag();
-                                    }
-                                } else {
-                                    endInput();
-                                    appendInputTag();
-                                }
-
-                            }
+                            submitTag();
                             return true;
                         }
                         return false;
@@ -847,13 +867,15 @@ public class TagGroup extends ViewGroup {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         if (keyCode == KeyEvent.KEYCODE_DEL && event.getAction() == KeyEvent.ACTION_DOWN) {
                             // If the input content is empty, check or remove the last NORMAL state tag.
-                            if (TextUtils.isEmpty(getText().toString())) {
+//                            if (TextUtils.isEmpty(getText().toString())) {
+                            // 之前是判断内容是否为空，改为判断光标位置是否在最左边，如果是则执行同样操作
+                            if (getSelectionStart() == 0) {
                                 TagView lastNormalTagView = getLastNormalTagView();
                                 if (lastNormalTagView != null) {
                                     if (lastNormalTagView.isChecked) {
                                         removeView(lastNormalTagView);
                                         if (mOnTagChangeListener != null) {
-                                            mOnTagChangeListener.onDelete(TagGroup.this, lastNormalTagView.getText().toString());
+                                            mOnTagChangeListener.onDelete(TagGroup.this, lastNormalTagView.getText().toString().trim());
                                         }
                                     } else {
                                         final TagView checkedTagView = getCheckedTag();
@@ -862,6 +884,7 @@ public class TagGroup extends ViewGroup {
                                         }
                                         lastNormalTagView.setChecked(true);
                                     }
+                                    Log.e(TAG, Arrays.toString(getTags()));
                                     return true;
                                 }
                             }
@@ -943,7 +966,7 @@ public class TagGroup extends ViewGroup {
          * @return True if the input content is available, false otherwise.
          */
         public boolean isInputAvailable() {
-            return getText() != null && getText().length() > 0;
+            return getText() != null && getText().toString().trim().length() > 0;
         }
 
         private void invalidatePaint() {
