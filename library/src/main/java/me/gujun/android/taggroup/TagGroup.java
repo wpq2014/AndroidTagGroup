@@ -13,6 +13,7 @@ import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
 import android.util.AttributeSet;
@@ -65,11 +66,13 @@ public class TagGroup extends ViewGroup {
     private static final int default_checked_marker_color = Color.WHITE;
     private static final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
     private static final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
+    private static final int default_input_max_length = 40;
 
     /**
      * Whether the TagGroup allow repeat tags. Default is false.
      */
     private boolean allowRepeat;
+
     /**
      * Indicates whether this TagGroup is set up to APPEND mode or DISPLAY mode. Default is false.
      */
@@ -79,6 +82,11 @@ public class TagGroup extends ViewGroup {
      * The text to be displayed when the text of the INPUT tag is empty.
      */
     private CharSequence inputHint;
+
+    /**
+     * Set input max length
+     */
+    private int inputMaxLenght;
 
     /**
      * The tag outline border color.
@@ -203,6 +211,7 @@ public class TagGroup extends ViewGroup {
             allowRepeat = a.getBoolean(R.styleable.TagGroup_atg_allowRepeat, false);
             isAppendMode = a.getBoolean(R.styleable.TagGroup_atg_isAppendMode, false);
             inputHint = a.getText(R.styleable.TagGroup_atg_inputHint);
+            inputMaxLenght = a.getInt(R.styleable.TagGroup_atg_inputMaxLength, default_input_max_length);
             borderColor = a.getColor(R.styleable.TagGroup_atg_borderColor, default_border_color);
             textColor = a.getColor(R.styleable.TagGroup_atg_textColor, default_text_color);
             backgroundColor = a.getColor(R.styleable.TagGroup_atg_backgroundColor, default_background_color);
@@ -557,6 +566,8 @@ public class TagGroup extends ViewGroup {
         }
 
         final TagView newInputTag = new TagView(getContext(), TagView.STATE_INPUT, tag);
+        // set max length
+        newInputTag.setFilters(new InputFilter[] { new InputFilter.LengthFilter(inputMaxLenght) });
         newInputTag.setOnClickListener(mInternalTagClickListener);
         addView(newInputTag);
     }

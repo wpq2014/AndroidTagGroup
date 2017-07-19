@@ -2,10 +2,13 @@
     <declare-styleable name="TagGroup">
         <!-- Whether the TagGroup allow repeat tags -->
         <attr name="atg_allowRepeat" format="boolean"/>
+
         <!-- Whether the tag group is in append mode. -->
         <attr name="atg_isAppendMode" format="boolean" />
         <!-- If the tag group is in append mode, what the hint of input tag. -->
         <attr name="atg_inputHint" format="string" />
+        <!-- Set input max length -->
+        <attr name="atg_inputMaxLength" format="integer"/>
 
         <!-- The tag view outline border color. -->
         <attr name="atg_borderColor" format="color" />
