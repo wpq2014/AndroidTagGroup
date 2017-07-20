@@ -56,17 +56,17 @@ public class TagGroup extends ViewGroup {
 
     private static final String TAG = TagGroup.class.getSimpleName();
 
-    private static final int default_border_color = Color.rgb(0x49, 0xC1, 0x20);
-    private static final int default_text_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_border_color = 0xFF49C120;
+    private static final int default_text_color = 0xFF49C120;
     private static final int default_background_color = Color.WHITE;
-    private static final int default_dash_border_color = Color.rgb(0xAA, 0xAA, 0xAA);
-    private static final int default_input_hint_color = Color.argb(0x80, 0x00, 0x00, 0x00);
-    private static final int default_input_text_color = Color.argb(0xDE, 0x00, 0x00, 0x00);
-    private static final int default_checked_border_color = Color.rgb(0x49, 0xC1, 0x20);
+    private static final int default_dash_border_color = 0xFFAAAAAA;
+    private static final int default_input_hint_color = 0x80000000;
+    private static final int default_input_text_color = 0xDE000000;
+    private static final int default_checked_border_color = 0xFF49C120;
     private static final int default_checked_text_color = Color.WHITE;
     private static final int default_checked_marker_color = Color.WHITE;
-    private static final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
-    private static final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
+    private static final int default_checked_background_color = 0xFF49C120;
+    private static final int default_pressed_background_color = 0xFFEDEDED;
     private static final int default_input_max_length = 40;
     private static final int default_tags_count_limit = 10;
 
@@ -206,7 +206,7 @@ public class TagGroup extends ViewGroup {
     public TagGroup(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         float default_border_stroke_width = dp2px(0.5f);
-        float default_text_size = sp2px(13.0f);
+        float default_text_size = sp2px(14.0f);
         float default_horizontal_spacing = dp2px(8.0f);
         float default_vertical_spacing = dp2px(4.0f);
         float default_horizontal_padding = dp2px(12.0f);
