@@ -28,6 +28,7 @@
                 android:id="@+id/tag_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:atg_inputHint="@string/add_tags"
                 app:atg_isAppendMode="true"/>
 
         </ScrollView>

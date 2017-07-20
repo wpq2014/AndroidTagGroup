@@ -200,7 +200,7 @@ public class TagGroup extends ViewGroup {
     }
 
     public TagGroup(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.tagGroupStyle);
+        this(context, attrs, 0);
     }
 
     public TagGroup(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -213,7 +213,7 @@ public class TagGroup extends ViewGroup {
         float default_vertical_padding = dp2px(3.0f);
 
         // Load styled attributes.
-        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagGroup, defStyleAttr, R.style.TagGroup);
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagGroup);
         try {
             allowRepeat = a.getBoolean(R.styleable.TagGroup_atg_allowRepeat, false);
             tagsCountLimit = a.getInt(R.styleable.TagGroup_atg_tagsCountLimit, default_tags_count_limit);

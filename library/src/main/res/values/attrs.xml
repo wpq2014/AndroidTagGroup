@@ -50,7 +50,4 @@
         <attr name="atg_verticalPadding" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="Themes">
-        <attr name="tagGroupStyle" format="reference" />
-    </declare-styleable>
 </resources>

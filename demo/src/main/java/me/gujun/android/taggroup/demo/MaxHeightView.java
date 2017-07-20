@@ -29,22 +29,21 @@ public class MaxHeightView extends FrameLayout {
     }
 
     public MaxHeightView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initAttrs(context, attrs);
-        init();
+        this(context, attrs, 0);
     }
 
     public MaxHeightView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initAttrs(context, attrs);
-        init();
-    }
 
-    private void initAttrs(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MaxHeightView);
-        mMaxRatio = a.getFloat(R.styleable.MaxHeightView_mhv_HeightRatio, DEFAULT_MAX_RATIO);
-        mMaxHeight = a.getDimension(R.styleable.MaxHeightView_mhv_HeightDimen, DEFAULT_MAX_HEIGHT);
-        a.recycle();
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MaxHeightView);;
+        try {
+            mMaxRatio = a.getFloat(R.styleable.MaxHeightView_mhv_HeightRatio, DEFAULT_MAX_RATIO);
+            mMaxHeight = a.getDimension(R.styleable.MaxHeightView_mhv_HeightDimen, DEFAULT_MAX_HEIGHT);
+        } finally {
+            a.recycle();
+        }
+
+        init();
     }
 
     private void init() {
@@ -66,9 +65,6 @@ public class MaxHeightView extends FrameLayout {
         super.onMeasure(widthMeasureSpec, maxHeightMeasureSpec);
     }
 
-    /**
-     * 获取屏幕高度
-     */
     private int getScreenHeight() {
         return getResources().getDisplayMetrics().heightPixels;
     }
