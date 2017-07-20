@@ -37,7 +37,7 @@ public class TagEditorActivity extends ActionBarActivity {
         mTagGroup.setTags(tags);
 
         mTagGroupChoice = (TagGroup) findViewById(R.id.tag_group_choice);
-        String[] tagsChoice = {"备用1", "备用2", "备用3", "备用4", "备用5"};
+        String[] tagsChoice = {"我我", "你你你", "他他他他", "她她他他她", "它它它它它它"};
         mTagGroupChoice.setOnTagClickListener(new TagGroup.OnTagClickListener() {
             @Override
             public void onTagClick(String tag) {

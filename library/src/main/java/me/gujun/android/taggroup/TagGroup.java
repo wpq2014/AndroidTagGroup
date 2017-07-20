@@ -68,7 +68,7 @@ public class TagGroup extends ViewGroup {
     private static final int default_checked_background_color = Color.rgb(0x49, 0xC1, 0x20);
     private static final int default_pressed_background_color = Color.rgb(0xED, 0xED, 0xED);
     private static final int default_input_max_length = 40;
-    private static final int default_tags_count_limit = 100;
+    private static final int default_tags_count_limit = 10;
 
     /**
      * Whether the TagGroup allow repeat tags. Default is false.
